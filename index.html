@@ -797,9 +797,35 @@ async function init(){
   await loadItems();
   render();
   document.getElementById('fabAdd').disabled = false;
+  startRealtimeSync();
 }
 init();
 
+// ---------- live sync via Firebase's streaming (SSE) endpoint ----------
+// Pushes updates the moment anyone else saves, instead of waiting for a poll.
+let eventSource = null;
+
+function startRealtimeSync(){
+  try{
+    eventSource = new EventSource(FIREBASE_DB_URL + DATA_PATH);
+    eventSource.addEventListener('put', onRealtimeEvent);
+    eventSource.addEventListener('patch', onRealtimeEvent);
+    eventSource.onerror = ()=>{ /* browser auto-reconnects; the slower poll below covers any gap */ };
+  }catch(e){ /* EventSource unsupported/blocked - falls back to polling only */ }
+}
+
+async function onRealtimeEvent(){
+  if(sheetBackdrop.classList.contains('open') || saving || dragCtx) return;
+  try{
+    const data = await serverGetItems();
+    if(data && Array.isArray(data) && JSON.stringify(data) !== JSON.stringify(items)){
+      items = data;
+      render();
+    }
+  }catch(e){ /* ignore */ }
+}
+
+// Slow safety-net poll in case the live connection ever silently drops (e.g. a strict network).
 setInterval(async ()=>{
   if(sheetBackdrop.classList.contains('open') || saving || dragCtx) return;
   try{
@@ -809,7 +835,7 @@ setInterval(async ()=>{
       render();
     }
   }catch(e){ /* ignore */ }
-}, 8000);
+}, 25000);
 </script>
 </body>
 </html>
