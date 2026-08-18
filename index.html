@@ -309,9 +309,7 @@
 </div>
 
 <div class="summary">
-  <div class="stat"><span class="num" id="statDone">0/0</span><span class="lbl">Picked Up</span></div>
   <div class="stat"><span class="num" id="statCost">$0</span><span class="lbl">Est. Total</span></div>
-  <div class="stat"><span class="num" id="statCats">0</span><span class="lbl">Categories</span></div>
 </div>
 
 <div class="controls">
@@ -425,7 +423,7 @@ function uid(){ return 'i' + Math.random().toString(36).slice(2,10) + Date.now()
 // ======= FIREBASE CONFIG =======
 // Paste your Realtime Database URL here (from the Firebase console, Realtime Database page).
 // It looks like: https://your-project-default-rtdb.firebaseio.com
-const FIREBASE_DB_URL = "https://lake-day-shopping-list-default-rtdb.firebaseio.com/";
+const FIREBASE_DB_URL = "https://lake-day-shopping-list-default-rtdb.firebaseio.com";
 const DATA_PATH = "/shoppingList.json";
 // ================================
 
@@ -510,11 +508,9 @@ function render(){
   const doneCount = items.filter(i=>i.done).length;
   const totalCount = items.length;
   const pct = totalCount ? Math.round((doneCount/totalCount)*100) : 0;
-  document.getElementById('statDone').textContent = `${doneCount}/${totalCount}`;
   const totalCost = items.reduce((sum,i)=>{ const c = fmtCost(i.cost); return sum + (c||0); }, 0);
   document.getElementById('statCost').textContent = '$' + totalCost.toFixed(0);
   const catsPresent = new Set(items.map(i=>i.category));
-  document.getElementById('statCats').textContent = catsPresent.size;
 
   const sunTop = 14 + (pct/100) * 32;
   document.getElementById('sun').style.top = sunTop + '%';
