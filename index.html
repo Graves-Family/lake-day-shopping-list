@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Mom's 80th — Lake Day List</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --lake-deep:#123b41;
+    --lake-mid:#1e5c60;
+    --lake-light:#3f8a86;
+    --sun-gold:#eeae3f;
+    --sun-bright:#f6cf7a;
+    --coral:#e2673b;
+    --cream:#fbf5e7;
+    --cream-2:#f3ead4;
+    --ink:#132926;
+    --ink-soft:#4a615d;
+    --line: rgba(19,41,38,0.12);
+    --radius: 16px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:100px;
+  }
+
+  ::selection{background:var(--sun-gold); color:var(--ink);}
+
+  .hero{
+    position:relative;
+    height:230px;
+    overflow:hidden;
+    background:linear-gradient(180deg, #ffe3ad 0%, #f6c26a 28%, var(--sun-gold) 45%, var(--lake-mid) 46%, var(--lake-deep) 100%);
+  }
+  .hero .horizon-line{
+    position:absolute; left:0; right:0; top:46%;
+    height:2px;
+    background:rgba(251,245,231,0.5);
+  }
+  .hero .ripple{
+    position:absolute; left:0; right:0;
+    border-radius:50%;
+    border:1.5px solid rgba(251,245,231,0.35);
+  }
+  .hero .sun{
+    position:absolute;
+    left:50%;
+    width:54px;height:54px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 35% 30%, #fff6de, var(--sun-bright) 45%, var(--sun-gold) 100%);
+    box-shadow:0 0 40px rgba(238,174,63,0.65);
+    transition: top 700ms cubic-bezier(.22,1,.36,1), background 700ms ease;
+  }
+  .hero-content{
+    position:relative; z-index:2;
+    height:100%;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding:18px 20px 14px;
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(251,245,231,0.85);
+    margin:0 0 4px;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:30px;
+    line-height:1.05;
+    margin:0 0 6px;
+    color:#fbf5e7;
+    text-shadow:0 2px 12px rgba(0,0,0,0.15);
+  }
+  .hero-sub{
+    display:flex; align-items:center; gap:10px;
+    font-size:13px;
+    color:rgba(251,245,231,0.9);
+  }
+
+  .summary{
+    display:flex;
+    gap:0;
+    margin:-18px 16px 18px;
+    background:var(--cream-2);
+    border-radius:var(--radius);
+    box-shadow:0 6px 20px rgba(18,59,65,0.14);
+    position:relative; z-index:3;
+    overflow:hidden;
+  }
+  .summary .stat{
+    flex:1;
+    padding:14px 10px;
+    text-align:center;
+    border-right:1px solid var(--line);
+  }
+  .summary .stat:last-child{border-right:none;}
+  .summary .stat .num{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:20px;
+    color:var(--lake-deep);
+    display:block;
+  }
+  .summary .stat .lbl{
+    font-size:10.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  .controls{
+    display:flex; gap:8px;
+    margin:0 16px 18px;
+    align-items:center;
+  }
+  .search{
+    flex:1;
+    display:flex; align-items:center; gap:8px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:9px 12px;
+  }
+  .search input{
+    border:none; outline:none; flex:1; font-size:14px; font-family:'Inter';
+    background:transparent; color:var(--ink);
+  }
+  .search input::placeholder{color:#9aada9;}
+  .filter-toggle{
+    display:flex; align-items:center; gap:6px;
+    font-size:12.5px; color:var(--ink-soft);
+    white-space:nowrap;
+    padding:9px 10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .filter-toggle input{accent-color:var(--coral); width:15px; height:15px;}
+
+  .list{ padding:0 16px; }
+  .category{ margin-bottom:22px; }
+  .category-head{
+    display:flex; align-items:baseline; gap:8px;
+    margin-bottom:8px;
+    padding-bottom:6px;
+    border-bottom:2px solid var(--lake-deep);
+  }
+  .category-head .icon{ font-size:16px; }
+  .category-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:16px;
+    margin:0;
+    color:var(--lake-deep);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .category-head .count{
+    margin-left:auto;
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+
+  .item{
+    display:flex; align-items:center; gap:12px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:11px 12px;
+    margin-bottom:8px;
+    transition: opacity 200ms ease, transform 200ms ease, background 200ms ease;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+  }
+  body.dragging-active{
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+  }
+  .item.done{ background:var(--cream-2); opacity:0.62; }
+  .item.done .item-name{ text-decoration:line-through; text-decoration-color:var(--coral); }
+  .item.dragging{ opacity:0.55; box-shadow:0 10px 24px rgba(18,59,65,0.28); position:relative; z-index:5; }
+  .drop-indicator{
+    height:3px;
+    background:var(--coral);
+    border-radius:2px;
+    margin:5px 4px;
+    box-shadow:0 0 8px rgba(226,103,59,0.5);
+  }
+
+  .drag-handle{
+    flex:none;
+    width:20px;
+    display:flex; align-items:center; justify-content:center;
+    color:#c3b8a6;
+    cursor:grab;
+    touch-action:none;
+    padding:4px 2px;
+  }
+  .drag-handle:active{ cursor:grabbing; color:var(--ink-soft); }
+
+  .check{
+    flex:none;
+    width:26px;height:26px;
+    border-radius:50%;
+    border:2px solid var(--lake-mid);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    background:#fff;
+    transition: background 150ms, border-color 150ms, transform 150ms;
+  }
+  .check svg{ width:14px; height:14px; opacity:0; transition:opacity 150ms; }
+  .item.done .check{ background:var(--lake-mid); border-color:var(--lake-mid); }
+  .item.done .check svg{ opacity:1; }
+  .check:active{ transform:scale(0.88); }
+
+  .item-body{ flex:1; min-width:0; cursor:pointer; }
+  .item-name{ font-size:14.5px; font-weight:600; color:var(--ink); line-height:1.3; white-space:pre-line; }
+  .item-meta{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+  .tag{ font-size:10.5px; padding:2px 7px; border-radius:20px; background:var(--cream-2); color:var(--ink-soft); font-family:'Space Mono',monospace; }
+  .tag.assignee{ background:rgba(63,138,134,0.14); color:var(--lake-deep); font-weight:700; }
+  .tag.link{ background:rgba(226,103,59,0.14); color:var(--coral); font-weight:700; text-decoration:none; cursor:pointer; }
+  .tag.link:hover{ background:rgba(226,103,59,0.22); }
+
+  .item-right{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .cost{ font-family:'Space Mono',monospace; font-weight:700; font-size:14px; color:var(--coral); }
+  .del-btn{ background:none; border:none; cursor:pointer; color:#c3b8a6; padding:2px; transition:color 150ms; }
+  .del-btn:hover{ color:var(--coral); }
+
+  .empty-state{ text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:14px; }
+
+  .fab{
+    position:fixed; right:18px; bottom:22px;
+    width:58px;height:58px; border-radius:50%;
+    background:var(--coral); color:#fff; border:none; font-size:28px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 24px rgba(226,103,59,0.45);
+    cursor:pointer; z-index:20; transition:transform 150ms;
+  }
+  .fab:active{ transform:scale(0.92); }
+  .fab[disabled]{ opacity:0.5; }
+
+  .sheet-backdrop{
+    position:fixed; inset:0; background:rgba(18,59,65,0.45); z-index:30;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .sheet-backdrop.open{ display:flex; }
+  .sheet{
+    background:var(--cream); width:100%; max-width:520px;
+    border-radius:22px 22px 0 0; padding:20px 20px 26px;
+    max-height:88vh; overflow-y:auto;
+    animation:slideUp 260ms cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes slideUp{ from{transform:translateY(100%);} to{transform:translateY(0);} }
+  .sheet h3{ font-family:'Fraunces',serif; font-size:20px; margin:0 0 14px; color:var(--lake-deep); }
+  .field{ margin-bottom:12px; }
+  .field label{ display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:5px; font-weight:600; }
+  .field input, .field select, .field textarea{
+    width:100%; padding:11px 12px; border-radius:10px; border:1px solid var(--line);
+    font-family:'Inter'; font-size:15px; background:#fff; color:var(--ink);
+  }
+  .field textarea{ resize:vertical; min-height:44px; font-family:'Inter'; }
+  .row2{ display:flex; gap:10px; }
+  .row2 .field{ flex:1; }
+  .sheet-actions{ display:flex; gap:10px; margin-top:16px; }
+  .btn{ flex:1; padding:13px; border-radius:12px; border:none; font-size:14.5px; font-weight:700; cursor:pointer; font-family:'Inter'; }
+  .btn-primary{ background:var(--lake-deep); color:#fbf5e7; }
+  .btn-secondary{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-danger{ background:transparent; color:var(--coral); border:1px solid rgba(226,103,59,0.35); }
+  .btn[disabled]{ opacity:0.6; cursor:default; }
+
+  .toast{
+    position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--cream); padding:10px 18px; border-radius:30px;
+    font-size:13px; opacity:0; pointer-events:none; transition:opacity 220ms, transform 220ms;
+    z-index:50; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .sync-note{ text-align:center; font-size:11.5px; color:var(--ink-soft); padding:6px 20px 0; }
+
+  @media (min-width:600px){ .hero h1{ font-size:36px; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="ripple" style="width:520px;height:520px;top:46%;left:50%;transform:translate(-50%,-2px);"></div>
+  <div class="ripple" style="width:340px;height:340px;top:46%;left:50%;transform:translate(-50%,-2px);"></div>
+  <div class="horizon-line"></div>
+  <div class="sun" id="sun"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Lake Day · Family Shopping List</p>
+    <h1>Mom's 80th Birthday</h1>
+    <div class="hero-sub"><span>🌊 Everyone can check off, add, or edit items</span></div>
+  </div>
+</div>
+
+<div class="summary">
+  <div class="stat"><span class="num" id="statDone">0/0</span><span class="lbl">Picked Up</span></div>
+  <div class="stat"><span class="num" id="statCost">$0</span><span class="lbl">Est. Total</span></div>
+  <div class="stat"><span class="num" id="statCats">0</span><span class="lbl">Categories</span></div>
+</div>
+
+<div class="controls">
+  <div class="search">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="Search items, vendors, or names…">
+  </div>
+</div>
+<div class="controls" style="margin-top:-10px;">
+  <label class="filter-toggle">
+    <input type="checkbox" id="hideDoneToggle">
+    Hide picked up
+  </label>
+</div>
+
+<div class="list" id="listContainer">
+  <div class="empty-state">Loading the list…</div>
+</div>
+
+<button class="fab" id="fabAdd" title="Add item" disabled>+</button>
+
+<div class="sheet-backdrop" id="sheetBackdrop">
+  <div class="sheet">
+    <h3 id="sheetTitle">Add an item</h3>
+    <div class="field">
+      <label>Item</label>
+      <textarea id="fName" placeholder="e.g. Bottled Water - 32 pack"></textarea>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Category</label>
+        <select id="fCategory"></select>
+      </div>
+      <div class="field">
+        <label>Or new category</label>
+        <input type="text" id="fNewCategory" placeholder="Optional">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Vendor</label>
+        <input type="text" id="fVendor" placeholder="e.g. HEB">
+      </div>
+      <div class="field">
+        <label>Est. cost</label>
+        <input type="text" id="fCost" placeholder="$0.00">
+      </div>
+    </div>
+    <div class="field">
+      <label>Who's bringing it</label>
+      <select id="fAssignee"></select>
+    </div>
+    <div class="field">
+      <label>Link (optional)</label>
+      <input type="url" id="fLink" placeholder="https://…">
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" id="btnCancel">Cancel</button>
+      <button class="btn btn-primary" id="btnSave">Save item</button>
+    </div>
+    <div class="sheet-actions" id="deleteRow" style="display:none;">
+      <button class="btn btn-danger" id="btnDelete">Remove this item</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<p class="sync-note">Shared with your family — changes sync for everyone with this link.</p>
+
+<script>
+const CATEGORY_ORDER = ['Breakfast','Snack','Beverage','Lunch','Dessert','Dinner'];
+const CATEGORY_ICONS = { Breakfast:'🌅', Snack:'🍇', Beverage:'🥤', Lunch:'🌮', Dessert:'🍰', Dinner:'🍕' };
+const ASSIGNEE_OPTIONS = ['Ryan','Dani','Mindy','Amy','Mom'];
+
+const seedItems = [
+  {category:'Breakfast', name:'Honey Nut Cheerios - Family Size', vendor:'HEB', cost:5, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Whole Milk - 1 Gal', vendor:'HEB', cost:3, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Bananas - 1 Bunch', vendor:'HEB', cost:2, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Greek Vanilla Yogurt - 32 oz', vendor:'HEB', cost:6, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Granola', vendor:'HEB', cost:4, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Mixed Berries - 1.35 lbs', vendor:'HEB', cost:9, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Cinnamon Swirl Bread', vendor:'HEB', cost:4, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Salted Whipped Butter', vendor:'HEB', cost:3, assignee:'Ryan', done:false, link:null},
+  {category:'Breakfast', name:'Bacon/Egg/Cheese Croissants - 6 ct', vendor:'HEB', cost:9, assignee:'Ryan', done:false, link:null},
+  {category:'Snack', name:'Large Fruit Tray', vendor:'HEB', cost:36, assignee:'Ryan', done:false, link:null},
+  {category:'Snack', name:'Medium Veggie Tray', vendor:'HEB', cost:26, assignee:'Ryan', done:false, link:null},
+  {category:'Snack', name:'Wavy Potato Chips - Party Size', vendor:'HEB', cost:4, assignee:'Ryan', done:false, link:null},
+  {category:'Snack', name:'Daisy Sour Cream Ranch Dip', vendor:'HEB', cost:3, assignee:'Ryan', done:false, link:null},
+  {category:'Snack', name:"Dean's French Onion Dip", vendor:'HEB', cost:3, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Lemonade', vendor:'HEB', cost:4, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Unsweet Tea - 1 Gal', vendor:'HEB', cost:3.5, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Sweet Tea - 1 Gal', vendor:'HEB', cost:3.5, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Sugar-Free Tea - 1 Gal', vendor:'HEB', cost:3.5, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Bottled Water - (1) 32-pack', vendor:'HEB', cost:10, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Dr. Pepper - 2L', vendor:'HEB', cost:2, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Ginger Ale - 2L', vendor:'HEB', cost:3, assignee:'Ryan', done:false, link:null},
+  {category:'Beverage', name:'Raspberry Tea Bags', vendor:'HEB', cost:3.5, assignee:'Ryan', done:false, link:null},
+  {category:'Lunch', name:'Soft Taco Bar\n- Grilled Chicken & Sweet Pork\n- Rice & Pinto Beans\n- Lettuce, Cheese, Salsa', vendor:'Costa Vida', cost:450, assignee:'Ryan', done:false, link:null},
+  {category:'Lunch', name:'Chicken Nugget Tray - Small', vendor:'Chik-fil-a', cost:35, assignee:'Ryan', done:false, link:null},
+  {category:'Dessert', name:'Chocolate Fudge 1/4 Sheet Cake', vendor:'HEB', cost:26, assignee:'Ryan', done:false, link:null},
+  {category:'Dessert', name:'Crème brûlée', vendor:'Dani', cost:null, assignee:'Ryan', done:false, link:null},
+  {category:'Dinner', name:'Pizza\n- (2) Cheese\n- (2) Pepperoni\n- (1) Special', vendor:"Palio's Delivery", cost:75, assignee:'Ryan', done:false, link:null},
+];
+
+let items = [];
+let editingId = null;
+let saving = false;
+
+function uid(){ return 'i' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+// ======= FIREBASE CONFIG =======
+// Paste your Realtime Database URL here (from the Firebase console, Realtime Database page).
+// It looks like: https://your-project-default-rtdb.firebaseio.com
+const FIREBASE_DB_URL = "https://lake-day-shopping-list-default-rtdb.firebaseio.com/";
+const DATA_PATH = "/shoppingList.json";
+// ================================
+
+function serverGetItems(){
+  return fetch(FIREBASE_DB_URL + DATA_PATH)
+    .then(res=>{ if(!res.ok) throw new Error('Fetch failed'); return res.json(); });
+}
+function serverSaveItems(itemsArray){
+  return fetch(FIREBASE_DB_URL + DATA_PATH, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(itemsArray)
+  }).then(res=>{ if(!res.ok) throw new Error('Save failed'); return true; });
+}
+
+async function loadItems(){
+  try{
+    const data = await serverGetItems();
+    if(data && Array.isArray(data)){
+      items = data;
+      const migrated = ensureOrder();
+      if(migrated) await persist();
+      return;
+    }
+  }catch(e){ /* fall through to seed */ }
+  items = seedItems.map((it, idx) => ({...it, id: uid()}));
+  ensureOrder();
+  await persist();
+}
+
+// Assigns an `order` value to any item missing one, appending within its category
+// in current array order. Returns true if anything was changed.
+function ensureOrder(){
+  let changed = false;
+  const nextByCat = {};
+  items.forEach(it=>{
+    if(nextByCat[it.category] === undefined) nextByCat[it.category] = 0;
+    if(typeof it.order !== 'number'){
+      it.order = nextByCat[it.category];
+      changed = true;
+    }
+    nextByCat[it.category] = Math.max(nextByCat[it.category], it.order + 1);
+  });
+  return changed;
+}
+
+function nextOrderFor(category){
+  const inCat = items.filter(i=>i.category===category);
+  if(inCat.length===0) return 0;
+  return Math.max(...inCat.map(i=> typeof i.order==='number' ? i.order : 0)) + 1;
+}
+
+async function persist(){
+  saving = true;
+  try{
+    await serverSaveItems(items);
+  }catch(e){
+    showToast("Couldn't sync — check your connection");
+  }
+  saving = false;
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+
+function fmtCost(c){
+  if(c === null || c === undefined || c === '') return null;
+  const n = typeof c === 'number' ? c : parseFloat(String(c).replace(/[^0-9.]/g,''));
+  if(isNaN(n)) return null;
+  return n;
+}
+
+function render(){
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const hideDone = document.getElementById('hideDoneToggle').checked;
+
+  const doneCount = items.filter(i=>i.done).length;
+  const totalCount = items.length;
+  const pct = totalCount ? Math.round((doneCount/totalCount)*100) : 0;
+  document.getElementById('statDone').textContent = `${doneCount}/${totalCount}`;
+  const totalCost = items.reduce((sum,i)=>{ const c = fmtCost(i.cost); return sum + (c||0); }, 0);
+  document.getElementById('statCost').textContent = '$' + totalCost.toFixed(0);
+  const catsPresent = new Set(items.map(i=>i.category));
+  document.getElementById('statCats').textContent = catsPresent.size;
+
+  const sunTop = 14 + (pct/100) * 32;
+  document.getElementById('sun').style.top = sunTop + '%';
+
+  let filtered = items.filter(it=>{
+    if(hideDone && it.done) return false;
+    if(!search) return true;
+    const hay = `${it.name} ${it.vendor||''} ${it.assignee||''} ${it.category}`.toLowerCase();
+    return hay.includes(search);
+  });
+
+  const grouped = {};
+  filtered.forEach(it=>{
+    if(!grouped[it.category]) grouped[it.category] = [];
+    grouped[it.category].push(it);
+  });
+  Object.keys(grouped).forEach(cat=>{
+    grouped[cat].sort((a,b)=> (a.order ?? 0) - (b.order ?? 0));
+  });
+
+  const orderedCats = Array.from(new Set([...CATEGORY_ORDER, ...Object.keys(grouped)])).filter(c=>grouped[c] && grouped[c].length);
+  const dragEnabled = !search && !hideDone;
+
+  const container = document.getElementById('listContainer');
+  if(orderedCats.length === 0){
+    container.innerHTML = `<div class="empty-state">Nothing here yet — tap + to add the first item 🌊</div>`;
+    return;
+  }
+
+  container.innerHTML = orderedCats.map(cat=>{
+    const catItems = grouped[cat];
+    const icon = CATEGORY_ICONS[cat] || '🧺';
+    const rows = catItems.map(it=>{
+      const cost = fmtCost(it.cost);
+      const costStr = cost !== null ? '$' + cost.toFixed(2) : '';
+      return `
+        <div class="item ${it.done?'done':''}" data-id="${it.id}">
+          ${dragEnabled ? `<div class="drag-handle" data-id="${it.id}" title="Drag to reorder">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="8" cy="6" r="1.8"/><circle cx="16" cy="6" r="1.8"/>
+              <circle cx="8" cy="12" r="1.8"/><circle cx="16" cy="12" r="1.8"/>
+              <circle cx="8" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/>
+            </svg>
+          </div>` : ''}
+          <div class="check" data-action="toggle" data-id="${it.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fbf5e7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="item-body" data-action="edit" data-id="${it.id}">
+            <div class="item-name">${escapeHtml(it.name)}</div>
+            <div class="item-meta">
+              ${it.vendor ? `<span class="tag">${escapeHtml(it.vendor)}</span>` : ''}
+              ${it.assignee ? `<span class="tag assignee">${escapeHtml(it.assignee)}</span>` : ''}
+              ${it.link ? `<a class="tag link" href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">🔗 View item</a>` : ''}
+            </div>
+          </div>
+          <div class="item-right">
+            ${costStr ? `<span class="cost">${costStr}</span>` : ''}
+            <button class="del-btn" data-action="delete" data-id="${it.id}" title="Remove">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                <path d="M10 11v6"></path><path d="M14 11v6"></path>
+              </svg>
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="category">
+        <div class="category-head">
+          <span class="icon">${icon}</span>
+          <h2>${escapeHtml(cat)}</h2>
+          <span class="count">${catItems.length}</span>
+        </div>
+        ${rows}
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+document.getElementById('listContainer').addEventListener('click', async (e)=>{
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const id = el.dataset.id;
+  const action = el.dataset.action;
+  if(action === 'toggle'){
+    const it = items.find(i=>i.id===id);
+    if(it){ it.done = !it.done; render(); await persist(); }
+  } else if(action === 'edit'){
+    openSheet(id);
+  } else if(action === 'delete'){
+    if(confirm('Remove this item from the list?')){
+      items = items.filter(i=>i.id!==id);
+      render(); await persist();
+      showToast('Item removed');
+    }
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('hideDoneToggle').addEventListener('change', render);
+
+// ---------- drag to reorder within a category ----------
+let dragCtx = null;
+
+document.getElementById('listContainer').addEventListener('pointerdown', (e)=>{
+  const handle = e.target.closest('.drag-handle');
+  if(!handle) return;
+  const itemEl = handle.closest('.item');
+  const categoryEl = handle.closest('.category');
+  if(!itemEl || !categoryEl) return;
+  e.preventDefault();
+  handle.setPointerCapture(e.pointerId);
+
+  const indicator = document.createElement('div');
+  indicator.className = 'drop-indicator';
+  categoryEl.insertBefore(indicator, itemEl.nextSibling);
+
+  dragCtx = { pointerId: e.pointerId, handle, itemEl, categoryEl, indicator };
+  itemEl.classList.add('dragging');
+  document.body.classList.add('dragging-active');
+  handle.addEventListener('pointermove', onDragMove);
+  handle.addEventListener('pointerup', onDragEnd);
+  handle.addEventListener('pointercancel', onDragEnd);
+  handle.addEventListener('lostpointercapture', onCaptureLost);
+});
+
+function onDragMove(e){
+  if(!dragCtx || e.pointerId !== dragCtx.pointerId) return;
+  const { itemEl, categoryEl, indicator } = dragCtx;
+  const y = e.clientY;
+  const siblings = Array.from(categoryEl.querySelectorAll(':scope > .item')).filter(el => el !== itemEl);
+  let target = null, placeBefore = true;
+  for(const sib of siblings){
+    const rect = sib.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if(y < mid){ target = sib; placeBefore = true; break; }
+    target = sib; placeBefore = false;
+  }
+  // Move only the indicator line - the dragged card itself stays put until release.
+  if(target){
+    if(placeBefore) categoryEl.insertBefore(indicator, target);
+    else categoryEl.insertBefore(indicator, target.nextSibling);
+  }
+}
+
+async function onDragEnd(e){
+  if(!dragCtx || e.pointerId !== dragCtx.pointerId) return;
+  finishDrag();
+}
+
+function onCaptureLost(){
+  // Safety net: if the browser drops capture unexpectedly, clean up instead of leaving the item stuck.
+  if(dragCtx) finishDrag();
+}
+
+async function finishDrag(){
+  if(!dragCtx) return;
+  const { handle, itemEl, categoryEl, indicator } = dragCtx;
+  try{ handle.releasePointerCapture(dragCtx.pointerId); }catch(err){ /* already released */ }
+  handle.removeEventListener('pointermove', onDragMove);
+  handle.removeEventListener('pointerup', onDragEnd);
+  handle.removeEventListener('pointercancel', onDragEnd);
+  handle.removeEventListener('lostpointercapture', onCaptureLost);
+  itemEl.classList.remove('dragging');
+  document.body.classList.remove('dragging-active');
+
+  // The single DOM move happens here, after capture is released - safe.
+  categoryEl.insertBefore(itemEl, indicator);
+  indicator.remove();
+
+  const orderedIds = Array.from(categoryEl.querySelectorAll(':scope > .item')).map(el => el.dataset.id);
+  orderedIds.forEach((id, idx)=>{
+    const it = items.find(i=>i.id===id);
+    if(it) it.order = idx;
+  });
+  dragCtx = null;
+  render();
+  await persist();
+}
+
+const sheetBackdrop = document.getElementById('sheetBackdrop');
+document.getElementById('fabAdd').addEventListener('click', ()=> openSheet(null));
+document.getElementById('btnCancel').addEventListener('click', closeSheet);
+sheetBackdrop.addEventListener('click', (e)=>{ if(e.target === sheetBackdrop) closeSheet(); });
+
+function openSheet(id){
+  editingId = id;
+  const title = document.getElementById('sheetTitle');
+  const deleteRow = document.getElementById('deleteRow');
+  if(id){
+    const it = items.find(i=>i.id===id);
+    title.textContent = 'Edit item';
+    document.getElementById('fName').value = it.name;
+    populateCategorySelect(it.category);
+    document.getElementById('fNewCategory').value = '';
+    document.getElementById('fVendor').value = it.vendor || '';
+    const c = fmtCost(it.cost);
+    document.getElementById('fCost').value = c !== null ? c : '';
+    populateAssigneeSelect(it.assignee || '');
+    document.getElementById('fLink').value = it.link || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    title.textContent = 'Add an item';
+    document.getElementById('fName').value = '';
+    populateCategorySelect(CATEGORY_ORDER[0]);
+    document.getElementById('fNewCategory').value = '';
+    document.getElementById('fVendor').value = '';
+    document.getElementById('fCost').value = '';
+    populateAssigneeSelect('');
+    document.getElementById('fLink').value = '';
+    deleteRow.style.display = 'none';
+  }
+  sheetBackdrop.classList.add('open');
+}
+
+function populateCategorySelect(current){
+  const sel = document.getElementById('fCategory');
+  const catsPresent = new Set(items.map(i=>i.category));
+  const existingCats = Array.from(new Set([...CATEGORY_ORDER, ...catsPresent]));
+  if(current && !existingCats.includes(current)) existingCats.push(current);
+  sel.innerHTML = existingCats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  sel.value = current;
+}
+
+function populateAssigneeSelect(current){
+  const sel = document.getElementById('fAssignee');
+  const opts = ['<option value="">Unassigned</option>', ...ASSIGNEE_OPTIONS.map(name => `<option value="${name}">${name}</option>`)];
+  if(current && !ASSIGNEE_OPTIONS.includes(current)){
+    opts.push(`<option value="${escapeHtml(current)}">${escapeHtml(current)}</option>`);
+  }
+  sel.innerHTML = opts.join('');
+  sel.value = current || '';
+}
+
+function closeSheet(){
+  sheetBackdrop.classList.remove('open');
+  editingId = null;
+}
+
+document.getElementById('btnSave').addEventListener('click', async ()=>{
+  const name = document.getElementById('fName').value.trim();
+  if(!name){ showToast('Give the item a name first'); return; }
+  const newCat = document.getElementById('fNewCategory').value.trim();
+  const category = newCat || document.getElementById('fCategory').value;
+  const vendor = document.getElementById('fVendor').value.trim();
+  const costRaw = document.getElementById('fCost').value.trim();
+  const cost = costRaw ? fmtCost(costRaw) : null;
+  const assignee = document.getElementById('fAssignee').value;
+  let link = document.getElementById('fLink').value.trim();
+  if(link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
+
+  if(editingId){
+    const it = items.find(i=>i.id===editingId);
+    const categoryChanged = it.category !== category;
+    const order = categoryChanged ? nextOrderFor(category) : it.order;
+    Object.assign(it, {name, category, vendor, cost, assignee, link: link || null, order});
+    showToast('Item updated');
+  } else {
+    items.push({id: uid(), name, category, vendor, cost, assignee, link: link || null, done:false, order: nextOrderFor(category)});
+    showToast('Item added');
+  }
+  render();
+  await persist();
+  closeSheet();
+});
+
+document.getElementById('btnDelete').addEventListener('click', async ()=>{
+  if(!editingId) return;
+  if(confirm('Remove this item from the list?')){
+    items = items.filter(i=>i.id!==editingId);
+    render();
+    await persist();
+    closeSheet();
+    showToast('Item removed');
+  }
+});
+
+async function init(){
+  await loadItems();
+  render();
+  document.getElementById('fabAdd').disabled = false;
+}
+init();
+
+setInterval(async ()=>{
+  if(sheetBackdrop.classList.contains('open') || saving || dragCtx) return;
+  try{
+    const data = await serverGetItems();
+    if(data && Array.isArray(data) && JSON.stringify(data) !== JSON.stringify(items)){
+      items = data;
+      render();
+    }
+  }catch(e){ /* ignore */ }
+}, 8000);
+</script>
+</body>
+</html>
